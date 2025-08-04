@@ -25,6 +25,8 @@ export default function Mapa() {
           </div>
         </div>
 
+
+
         {/* Contenedor principal */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Mapa interactivo */}
