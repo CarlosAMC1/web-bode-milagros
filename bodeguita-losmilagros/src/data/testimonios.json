@@ -1,0 +1,17 @@
+[
+  {
+    "nombre": "Juana R.",
+    "mensaje": "Me encanta comprar aquí, siempre puntuales y buen precio.",
+    "foto": "/clientes/juana.jpg"
+  },
+  {
+    "nombre": "Carlos M.",
+    "mensaje": "Los productos siempre llegan en buen estado y rápido.",
+    "foto": "/clientes/carlos.jpg"
+  },
+  {
+    "nombre": "Ana P.",
+    "mensaje": "Buena atención, súper recomendados.",
+    "foto": "/clientes/ana.jpg"
+  }
+]

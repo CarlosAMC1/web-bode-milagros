@@ -1,0 +1,61 @@
+
+[
+  {
+    "id": 1,
+    "nombre": "Café Premium",
+    "precio": 24.9,
+    "imagen": "/productos/cafe.jpg",
+    "categoria": "Bebidas",
+    "descuento": 10,
+    "stock": 15
+    },
+
+
+
+  {    "id": 2,
+    "nombre": "Café Premium",
+    "precio": 24.9,
+    "imagen": "/productos/cafe.jpg",
+    "categoria": "Bebidas",
+    "descuento": 10,
+    "stock": 15
+},
+
+  
+
+
+
+  {
+    "id": 3,
+    "nombre": "Café Premium",
+    "precio": 24.9,
+    "imagen": "/productos/cafe.jpg",
+    "categoria": "Bebidas",
+    "descuento": 10,
+    "stock": 15
+  },
+
+
+
+  {
+    "id": 4,
+    "nombre": "Café Premium",
+    "precio": 24.9,
+    "imagen": "/productos/cafe.jpg",
+    "categoria": "Bebidas",
+    "descuento": 10,
+    "stock": 15
+  },
+
+
+
+  {
+    "id": 5,
+    "nombre": "Café Premium",
+    "precio": 24.9,
+    "imagen": "/productos/cafe.jpg",
+    "categoria": "Bebidas",
+    "descuento": 10,
+    "stock": 15
+  }
+]
