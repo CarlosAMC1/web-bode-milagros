@@ -1,23 +1,26 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import initialProducts from '../data/productos.json';
+import initialProducts from '@/productos.json';
 
-interface Producto {
+export interface Producto {
     id: number;
     nombre: string;
     precio: number;
-    imagen: string;
     categoria: string;
+    imagen: string;
+    stock: number;
     descuento?: number;
-    stock?: number;
-    destacado?: boolean;
 }
 
-interface User {
+export interface User {
     id: string;
     name: string;
     role: 'admin' | 'user';
+}
+
+export interface CartItem extends Producto {
+    quantity: number;
 }
 
 interface AppContextType {
@@ -28,6 +31,12 @@ interface AppContextType {
     user: User | null;
     login: (credentials: any) => boolean;
     logout: () => void;
+    // Cart
+    cart: CartItem[];
+    addToCart: (product: Producto) => void;
+    removeFromCart: (productId: number) => void;
+    updateCartQuantity: (productId: number, quantity: number) => void;
+    clearCart: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -35,6 +44,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
     const [products, setProducts] = useState<Producto[]>([]);
     const [user, setUser] = useState<User | null>(null);
+    const [cart, setCart] = useState<CartItem[]>([]);
 
     useEffect(() => {
         // Load products from localStorage or initial JSON
@@ -49,6 +59,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const savedUser = localStorage.getItem('milagros_user');
         if (savedUser) {
             setUser(JSON.parse(savedUser));
+        }
+
+        // Load cart
+        const savedCart = localStorage.getItem('milagros_cart');
+        if (savedCart) {
+            setCart(JSON.parse(savedCart));
         }
     }, []);
 
@@ -71,7 +87,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
 
     const login = (credentials: any) => {
-        // Demo login: admin / 1234
         if (credentials.username === 'admin' && credentials.password === '1234') {
             const newUser: User = { id: '1', name: 'Administrador', role: 'admin' };
             setUser(newUser);
@@ -86,10 +101,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('milagros_user');
     };
 
+    // Cart Logic
+    const saveCart = (newCart: CartItem[]) => {
+        setCart(newCart);
+        localStorage.setItem('milagros_cart', JSON.stringify(newCart));
+    };
+
+    const addToCart = (product: Producto) => {
+        const existingItem = cart.find(item => item.id === product.id);
+        if (existingItem) {
+            saveCart(cart.map(item =>
+                item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+            ));
+        } else {
+            saveCart([...cart, { ...product, quantity: 1 }]);
+        }
+    };
+
+    const removeFromCart = (id: number) => {
+        saveCart(cart.filter(item => item.id !== id));
+    };
+
+    const updateCartQuantity = (id: number, quantity: number) => {
+        if (quantity <= 0) {
+            removeFromCart(id);
+        } else {
+            saveCart(cart.map(item =>
+                item.id === id ? { ...item, quantity } : item
+            ));
+        }
+    };
+
+    const clearCart = () => {
+        saveCart([]);
+    };
+
     return (
         <AppContext.Provider value={{
             products, addProduct, updateProduct, deleteProduct,
-            user, login, logout
+            user, login, logout,
+            cart, addToCart, removeFromCart, updateCartQuantity, clearCart
         }}>
             {children}
         </AppContext.Provider>

@@ -2,19 +2,15 @@
 
 import { motion } from 'framer-motion';
 import { FiShoppingCart, FiHeart, FiEye } from 'react-icons/fi';
+import { Producto, useApp } from '../context/AppContext';
+import Link from 'next/link';
 
-interface Producto {
-  id: number;
-  nombre: string;
-  precio: number;
-  imagen: string;
-  categoria: string;
-  descuento?: number;
-  stock?: number;
-  destacado?: boolean;
+interface ProductCardProps {
+  producto: Producto;
 }
 
-export default function ProductCard({ producto }: { producto: Producto }) {
+export default function ProductCard({ producto }: ProductCardProps) {
+  const { addToCart } = useApp();
   const descuento = producto.descuento || 0;
   const precioFinal = producto.precio * (1 - descuento / 100);
 
@@ -26,66 +22,62 @@ export default function ProductCard({ producto }: { producto: Producto }) {
       whileHover={{ y: -10 }}
       className="group relative"
     >
-      <div className="glass rounded-[2rem] overflow-hidden transition-all duration-500 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] group-hover:border-white/30">
-        {/* Imagen */}
-        <div className="relative h-64 overflow-hidden">
+      <div className="glass rounded-[2rem] overflow-hidden transition-all duration-500 group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.4)] border-white/10 group-hover:border-white/30">
+
+        {/* Clickable Image Area */}
+        <Link href={`/producto/${producto.id}`} className="block relative h-72 overflow-hidden">
           <img
             src={producto.imagen}
             alt={producto.nombre}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src = '/productos/default.png';
             }}
           />
 
           {/* Overlays */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-60" />
 
-          {/* Etiquetas */}
+          {/* Badges */}
           <div className="absolute top-4 left-4 flex flex-col gap-2">
-            {producto.destacado && (
-              <span className="px-3 py-1 bg-amber-500 text-white text-[10px] font-black tracking-widest rounded-full shadow-lg">
-                DESTACADO
-              </span>
-            )}
             {descuento > 0 && (
-              <span className="px-3 py-1 bg-red-500 text-white text-[10px] font-black tracking-widest rounded-full shadow-lg">
+              <span className="glass px-3 py-1 text-primary text-[10px] font-black tracking-widest rounded-full border-primary/20 animate-pulse">
                 -{descuento}%
               </span>
             )}
           </div>
 
-          {/* Acciones Rápidas */}
+          {/* Quick Actions */}
           <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
             <button className="glass p-3 rounded-xl hover:bg-primary hover:text-white transition-colors">
               <FiHeart size={18} />
             </button>
-            <button className="glass p-3 rounded-xl hover:bg-primary hover:text-white transition-colors">
+            <Link href={`/producto/${producto.id}`} className="glass p-3 rounded-xl hover:bg-primary hover:text-white transition-colors">
               <FiEye size={18} />
-            </button>
+            </Link>
           </div>
-        </div>
+        </Link>
 
-        {/* Detalles */}
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-bold tracking-[0.2em] text-primary uppercase">
+        {/* Details */}
+        <div className="p-8">
+          <div className="flex justify-between items-start mb-3">
+            <span className="text-[10px] font-black tracking-[0.2em] text-primary uppercase">
               {producto.categoria}
             </span>
-            {producto.stock !== undefined && (
-              <span className="text-[10px] text-slate-400">
-                {producto.stock} DISPONIBLES
-              </span>
-            )}
+            <span className={`text-[10px] font-bold ${producto.stock > 0 ? 'text-green-500/70' : 'text-red-500/70'}`}>
+              {producto.stock > 0 ? `${producto.stock} EN STOCK` : 'AGOTADO'}
+            </span>
           </div>
 
-          <h3 className="text-lg font-bold text-white mb-4 line-clamp-1 group-hover:text-primary transition-colors">
-            {producto.nombre}
-          </h3>
+          <Link href={`/producto/${producto.id}`}>
+            <h3 className="text-xl font-bold text-white mb-6 line-clamp-1 group-hover:text-primary transition-colors">
+              {producto.nombre}
+            </h3>
+          </Link>
 
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-2xl font-black text-white">
+              <span className="text-3xl font-black text-white tracking-tighter">
                 S/ {precioFinal.toFixed(2)}
               </span>
               {descuento > 0 && (
@@ -95,8 +87,12 @@ export default function ProductCard({ producto }: { producto: Producto }) {
               )}
             </div>
 
-            <button className="p-4 bg-primary text-white rounded-2xl hover:scale-110 active:scale-95 transition-all shadow-[0_10px_20px_rgba(245,158,11,0.3)]">
-              <FiShoppingCart size={20} />
+            <button
+              onClick={() => addToCart(producto)}
+              disabled={producto.stock <= 0}
+              className={`p-5 bg-primary text-white rounded-2xl hover:scale-110 active:scale-95 transition-all shadow-[0_15px_30px_rgba(245,158,11,0.3)] hover:shadow-primary/50 ${producto.stock <= 0 ? 'opacity-50 cursor-not-allowed group-hover:scale-100' : ''}`}
+            >
+              <FiShoppingCart size={22} />
             </button>
           </div>
         </div>
