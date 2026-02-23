@@ -1,70 +1,95 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiMenu } from 'react-icons/fi';
+import { FiX, FiMenu, FiShoppingBag, FiUser } from 'react-icons/fi';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
       <motion.nav
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'py-3' : 'py-6'
+          }`}
       >
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-extrabold text-gray-900">
-            <span className="text-emerald-600">LOS</span>
-            <span className="tracking-tight">MILAGROS</span>
-          </Link>
-
-          <div className="hidden md:flex gap-6 items-center">
-            <Link href="/" className="text-sm text-gray-700 hover:text-emerald-600 font-medium transition-all">INICIO</Link>
-            <Link href="#productos" className="text-sm text-gray-700 hover:text-emerald-600 font-medium transition-all">PRODUCTOS</Link>
-            <Link href="#nosotros" className="text-sm text-gray-700 hover:text-emerald-600 font-medium transition-all">NOSOTROS</Link>
-            <Link
-              href="/contacto"
-              className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-all text-sm font-semibold shadow-sm"
-            >
-              PEDIDOS
+        <div className="container mx-auto px-6 flex justify-between items-center">
+          <div className="glass px-4 py-2 rounded-2xl flex items-center gap-6">
+            <Link href="/" className="text-xl font-black tracking-tighter flex items-center gap-2 group">
+              <span className="premium-gradient bg-clip-text text-transparent group-hover:text-glow transition-all">MILAGROS</span>
+              <span className="w-2 h-2 rounded-full bg-primary" />
             </Link>
+
+            <div className="hidden md:flex gap-8 items-center">
+              <Link href="/" className="text-xs font-bold tracking-widest text-slate-300 hover:text-white transition-colors">INICIO</Link>
+              <Link href="#productos" className="text-xs font-bold tracking-widest text-slate-300 hover:text-white transition-colors">PRODUCTOS</Link>
+              <Link href="#nosotros" className="text-xs font-bold tracking-widest text-slate-300 hover:text-white transition-colors">NOSOTROS</Link>
+            </div>
           </div>
 
-          {/* Botón hamburguesa en mobile */}
-          <button
-            className="md:hidden text-gray-800"
-            onClick={() => setMenuOpen(true)}
-          >
-            <FiMenu size={24} />
-          </button>
+          <div className="flex gap-4 items-center">
+            <button className="hidden sm:flex glass p-3 rounded-xl text-white hover:bg-white/20 transition-all">
+              <FiShoppingBag />
+            </button>
+
+            <Link
+              href="/login"
+              className="glass p-3 rounded-xl text-white hover:bg-white/20 transition-all flex items-center gap-2 px-4"
+            >
+              <FiUser />
+              <span className="text-xs font-bold tracking-widest hidden lg:inline">LOGIN</span>
+            </Link>
+
+            <button
+              className="md:hidden glass p-3 rounded-xl text-white"
+              onClick={() => setMenuOpen(true)}
+            >
+              <FiMenu size={20} />
+            </button>
+          </div>
         </div>
       </motion.nav>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'tween', duration: 0.3 }}
-            className="fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-[60] p-6 flex flex-col gap-6"
-          >
-            <button className="self-end" onClick={() => setMenuOpen(false)}>
-              <FiX size={26} />
-            </button>
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+              onClick={() => setMenuOpen(false)}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              className="fixed top-0 right-0 w-80 h-full glass-dark z-[70] p-10 flex flex-col gap-10"
+            >
+              <button className="self-end p-2 glass rounded-lg" onClick={() => setMenuOpen(false)}>
+                <FiX size={24} />
+              </button>
 
-            <Link href="/" onClick={() => setMenuOpen(false)} className="text-gray-700 hover:text-emerald-600 text-base font-semibold">Inicio</Link>
-            <Link href="#productos" onClick={() => setMenuOpen(false)} className="text-gray-700 hover:text-emerald-600 text-base font-semibold">Productos</Link>
-            <Link href="#nosotros" onClick={() => setMenuOpen(false)} className="text-gray-700 hover:text-emerald-600 text-base font-semibold">Nosotros</Link>
-            <Link href="/contacto" onClick={() => setMenuOpen(false)} className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-center font-semibold hover:bg-emerald-700 transition-all">
-              Pedidos
-            </Link>
-          </motion.div>
+              <div className="flex flex-col gap-8">
+                <Link href="/" onClick={() => setMenuOpen(false)} className="text-2xl font-black text-white hover:text-primary transition-colors">Inicio</Link>
+                <Link href="#productos" onClick={() => setMenuOpen(false)} className="text-2xl font-black text-white hover:text-primary transition-colors">Productos</Link>
+                <Link href="#nosotros" onClick={() => setMenuOpen(false)} className="text-2xl font-black text-white hover:text-primary transition-colors">Nosotros</Link>
+                <Link href="/login" onClick={() => setMenuOpen(false)} className="mt-4 px-8 py-4 bg-primary text-white font-bold rounded-2xl text-center shadow-lg">
+                  Panel Admin
+                </Link>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>

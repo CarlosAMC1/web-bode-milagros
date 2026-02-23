@@ -29,6 +29,8 @@ export default function Contacto() {
             type="submit" 
             className="bg-amber-600 text-white px-6 py-3 rounded w-full hover:bg-amber-700"
           >
+          
+
             Enviar
           </button>
         </form>
